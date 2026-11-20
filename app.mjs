@@ -1,6 +1,6 @@
 import {setupShow,observeShow,resetShow} from './show.mjs';
 import {COLORS,NAMES,AVATARS,makeRoom,addPlayer,startGame,playCard,drawCard,passTurn,announceUno,catchUno,tease,playable,canPlay,cardText,handOf,currentCard,currentPlayer,botChoice,normalizeRules,DEFAULT_RULES,setRoomRules,newChampionship,standings,handPoints} from './rules.mjs';
-import * as Net from './firebase-net.mjs';
+import * as Net from './firebase-net-v053.mjs';
 const AVATAR_INLINE=window.CC_ASSETS||null;const avatarSrc=a=>AVATAR_INLINE?.[a]||`assets/${a}.webp`;
 const $=id=>document.getElementById(id);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -229,4 +229,4 @@ $('winner-box').appendChild($('rematch-details'));
 if(!Net.firebaseConfigured())$('setup-note').textContent='Mode en ligne : il faut d’abord compléter firebase-config.js et publier le jeu (voir guide). La démo contre les bots fonctionne sans compte.';
 setupShow(avatarSrc);
 view('setup');
-if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js?v=053',{updateViaCache:'none'}).catch(()=>{});

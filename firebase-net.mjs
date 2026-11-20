@@ -15,9 +15,21 @@ export async function connectFirebase(){
       import('https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js')
     ]);
     const fb=app.initializeApp(window.CARTES_FIREBASE_CONFIG);
-    const a=auth.getAuth(fb);await a.authStateReady();
-    if(!a.currentUser)await auth.signInAnonymously(a);
-    return {uid:a.currentUser.uid,db:database.getDatabase(fb),api:database};
+    const a=auth.getAuth(fb);
+    // Attend l'état initial via le listener officiel, compatible avec les SDK
+    // même si les méthodes facultatives du SDK sont absentes.
+    const initialUser=await new Promise((resolve,reject)=>{
+      let stop=()=>{},settled=false;
+      const settle=(callback,value)=>{
+        if(settled)return;
+        settled=true; stop(); callback(value);
+      };
+      stop=auth.onAuthStateChanged(a,user=>settle(resolve,user),error=>settle(reject,error));
+      if(settled)stop();
+    });
+    const player=initialUser || (await auth.signInAnonymously(a)).user;
+    if(!player || !player.uid)throw Error('Impossible d’obtenir une session Firebase.');
+    return {uid:player.uid,db:database.getDatabase(fb),api:database};
   })();
   try{return await sessionPromise;}catch(e){sessionPromise=null;throw e;}
 }
