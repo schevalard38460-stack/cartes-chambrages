@@ -15,7 +15,7 @@ export async function connectFirebase(){
       import('https://www.gstatic.com/firebasejs/13.3.0/firebase-database.js')
     ]);
     const fb=app.initializeApp(window.CARTES_FIREBASE_CONFIG);
-    const a=auth.getAuth(fb);await auth.authStateReady(a);
+    const a=auth.getAuth(fb);await a.authStateReady();
     if(!a.currentUser)await auth.signInAnonymously(a);
     return {uid:a.currentUser.uid,db:database.getDatabase(fb),api:database};
   })();
